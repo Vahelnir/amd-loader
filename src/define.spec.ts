@@ -90,21 +90,6 @@ describe("define()", () => {
       expect(definedModule?.deps).toEqual(expectedDependencies);
     });
 
-    it("should not extract dependencies from comments", () => {
-      const moduleName = "myModuleWithFactoryRequire";
-      const expectedDependencies = new Set(["helloworld"]);
-
-      define(moduleName, (require) => {
-        // require("hello")
-        // @ts-ignore: because the module does not exist
-        require("helloworld");
-      });
-
-      const definedModule = definedModules.get(moduleName);
-      expect(definedModule).toBeDefined();
-      expect(definedModule?.deps).toEqual(expectedDependencies);
-    });
-
     it("should concat extracted dependencies with explicit dependencies", () => {
       const moduleName = "myModuleWithDependencies";
       const dependencies = ["./test", "require", "lodash"];

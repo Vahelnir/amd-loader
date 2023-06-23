@@ -1,6 +1,7 @@
 import { dirname } from "./dirname";
 import { makeRequire } from "./makeRequire";
 import { CommonJSModuleFactory, ModuleFactory, definedModules } from "./module";
+import { parseDependencies } from "./parseDependencies";
 
 /**
  * Define an AMD module
@@ -14,34 +15,40 @@ export function define(
   factory: ModuleFactory
 ): void;
 export function define(
-  rawId: string | string[] | unknown,
-  rawDeps?: string[] | unknown,
+  rawId: unknown,
+  rawDependencies?: unknown,
   rawFactory?: unknown
 ): void {
+  const getDependencies = () => {
+    if (Array.isArray(rawId)) return rawId;
+    if (Array.isArray(rawDependencies)) return rawDependencies;
+    return [];
+  };
+  const getFactory = () => {
+    if (typeof rawId === "function") return rawId;
+    if (typeof rawDependencies === "function") return rawDependencies;
+    return rawFactory;
+  };
+
   // TODO: handle the case where the name should be what it as been required as
   const id = typeof rawId === "string" ? rawId : "";
-  const deps = Array.isArray(rawId)
-    ? rawId
-    : Array.isArray(rawDeps)
-    ? rawDeps
-    : [];
-  const factory = (
-    typeof rawId === "function"
-      ? rawId
-      : typeof rawDeps === "function"
-      ? rawDeps
-      : rawFactory
-  ) as ModuleFactory;
+  const dependencies = getDependencies();
+  const factory = getFactory() as ModuleFactory;
   if (!factory) {
     throw new Error("no factory defined");
   }
 
-  const allDeps = new Set([...deps, ...parseDependencies(factory.toString())]);
+  const allDependencies = new Set([
+    ...dependencies,
+    ...parseDependencies(factory.toString()),
+  ]);
 
   definedModules.set(id, {
     factory,
     deps:
-      allDeps.size > 0 ? allDeps : new Set(["require", "exports", "module"]),
+      allDependencies.size > 0
+        ? allDependencies
+        : new Set(["require", "exports", "module"]),
     module: {
       id,
       filename: id,
@@ -56,27 +63,3 @@ export function define(
   });
 }
 define.amd = {};
-
-const COMMENT_REGEX = /\/\*[\s\S]*?\*\/|([^:"'=]|^)\/\/.*$/gm;
-const REQUIRE_REGEX = /[^.]\s*require\s*\(\s*["']([^'"\s]+)["']\s*\)/g;
-/**
- * Extract the dependencies from a function content
- * Example:
- * ```js
- * function test() {
- *  const myModule = require("myModule");
- * }
- * parseDependencies(test.toString()) // will return ["myModule"]
- * ```
- * TODO: try to find a better solution than the one used by RequireJS
- */
-const parseDependencies = (content: string) => {
-  const dependencies: string[] = [];
-  content
-    .replace(COMMENT_REGEX, (_, singlePrefix) => singlePrefix || "")
-    .replace(REQUIRE_REGEX, (match, dep) => {
-      dependencies.push(dep);
-      return match;
-    });
-  return dependencies;
-};
