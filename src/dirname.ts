@@ -1,8 +1,7 @@
 /**
  * Return the path to the parent directory
- * @param {string} path
  */
-export const dirname = (path) => {
+export const dirname = (path: string) => {
   const lastPathDelimiterIndex = path.lastIndexOf("/");
   if (lastPathDelimiterIndex < 0) {
     return "";

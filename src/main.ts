@@ -9,10 +9,7 @@ const amdLoader = {
   modules: definedModules,
   define,
   makeRequire,
-  /**
-   * @param {string} id
-   */
-  require: (id) =>
+  require: (id: string) =>
     new Promise((resolve, reject) => globalRequire([id], resolve, reject)),
 };
 
