@@ -12,5 +12,13 @@
       "error",
       { "ts-ignore": "allow-with-description" }
     ]
-  }
+  },
+  "overrides": [
+    {
+      "files": "./test/**/*",
+      "rules": {
+        "@typescript-eslint/no-non-null-assertion": "off"
+      }
+    }
+  ]
 }

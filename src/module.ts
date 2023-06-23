@@ -1,9 +1,8 @@
 import { RequireFunc } from "./makeRequire";
 import { makeResolver } from "./makeResolver";
 
-export type ModuleFactory<T extends unknown[] = unknown[]> = (
-  ...args: T
-) => unknown;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type ModuleFactory<T extends any[] = any[]> = (...args: T) => unknown;
 
 export type CommonJSModuleFactory = ModuleFactory<
   [RequireFunc, Record<PropertyKey, unknown>, Module]
@@ -11,19 +10,20 @@ export type CommonJSModuleFactory = ModuleFactory<
 
 export type Module = {
   children: Module[];
-  exports: unknown;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  exports: any;
   filename: string;
   id: string;
   isPreloading: boolean;
   loaded: boolean;
   path: string;
   paths: string[];
-  require: import("./makeRequire").RequireFunc;
+  require: RequireFunc;
 };
 
 export type DefinedModule = {
   factory: ModuleFactory;
-  deps: Set<string>;
+  dependencies: Set<string>;
   module: Module;
 };
 
@@ -32,6 +32,7 @@ export const definedModules = new Map<string, DefinedModule>();
 export const requireModule = (currentId: string, id: string) => {
   const resolve = makeResolver(currentId);
   const resolvedId = resolve(id);
+
   const definedModule = definedModules.get(resolvedId);
   if (!definedModule) {
     throw new Error(
@@ -60,13 +61,17 @@ const fetchDependencyModule = (
     return module.exports;
   }
 
+  if (dependency === "module") {
+    return module;
+  }
+
   const foundModule = requireModule(module.id, dependency);
   module.children.push(foundModule);
-  return foundModule;
+  return foundModule.exports;
 };
 
 const fetchDependencyModules = (definedModule: DefinedModule) => {
-  return [...definedModule.deps.values()].map((dep) =>
+  return [...definedModule.dependencies.values()].map((dep) =>
     fetchDependencyModule(definedModule, dep)
   );
 };

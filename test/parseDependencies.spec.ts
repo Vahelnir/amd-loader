@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { CommonJSModuleFactory, definedModules } from "./module";
-import { parseDependencies } from "./parseDependencies";
+import { CommonJSModuleFactory, definedModules } from "../src/module";
+import { parseDependencies } from "../src/parseDependencies";
 
 describe("parseDependencies()", () => {
   beforeEach(() => {

@@ -4,11 +4,15 @@ type ResolveFunc = (...deps: unknown[]) => void;
 type RejectFunc = (rej: unknown) => void;
 
 export type RequireFunc = {
-  (ids: string): unknown;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (ids: string): any;
   (ids: string[], resolve: ResolveFunc, reject: RejectFunc): undefined;
-  (ids: string[] | string, resolve?: ResolveFunc, reject?: RejectFunc):
-    | unknown
-    | undefined;
+  (
+    ids: string[] | string,
+    resolve?: ResolveFunc,
+    reject?: RejectFunc
+  ): // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  any | undefined;
 };
 
 /**

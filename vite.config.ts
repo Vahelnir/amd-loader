@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import { resolve } from "node:path";
+import { fileURLToPath, URL } from "node:url";
 
 const MINIFY = !!process.env.MINIFY;
 
@@ -20,4 +21,9 @@ export default defineConfig({
     },
   },
   plugins: [],
+  resolve: {
+    alias: {
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+    },
+  },
 });

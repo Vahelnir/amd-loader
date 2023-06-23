@@ -1,6 +1,6 @@
 import { it, describe, expect, beforeEach } from "vitest";
-import { define } from "./define";
-import { definedModules } from "./module";
+import { define } from "../src/define";
+import { definedModules } from "../src/module";
 
 const noop = () => () => {
   // noop
@@ -53,13 +53,15 @@ describe("define()", () => {
     it("should create a named module with dependencies", () => {
       const moduleName = "myModuleWithDependencies";
       const dependencies = ["./test", "require", "lodash"];
-      const expectedDependencies = new Set(dependencies);
+      const expectedDependencies = [...dependencies];
 
       define(moduleName, dependencies, noop());
 
       const definedModule = definedModules.get(moduleName);
       expect(definedModule).toBeDefined();
-      expect(definedModule?.deps).toEqual(expectedDependencies);
+      expect([...definedModule!.dependencies.values()]).toEqual(
+        expectedDependencies
+      );
     });
 
     it("should add a DefinedModule into the module list", () => {
@@ -78,7 +80,7 @@ describe("define()", () => {
   describe("dependency extraction", () => {
     it("should create a named module with dependencies declared in the factory", () => {
       const moduleName = "myModuleWithFactoryRequire";
-      const expectedDependencies = new Set(["imatest"]);
+      const expectedDependencies = ["require", "exports", "module", "imatest"];
 
       define(moduleName, (require) => {
         // @ts-ignore: because the module does not exist
@@ -87,17 +89,15 @@ describe("define()", () => {
 
       const definedModule = definedModules.get(moduleName);
       expect(definedModule).toBeDefined();
-      expect(definedModule?.deps).toEqual(expectedDependencies);
+      expect([...definedModule!.dependencies.values()]).toEqual(
+        expectedDependencies
+      );
     });
 
     it("should concat extracted dependencies with explicit dependencies", () => {
       const moduleName = "myModuleWithDependencies";
       const dependencies = ["./test", "require", "lodash"];
-      const expectedDependencies = new Set([
-        ...dependencies,
-        "react",
-        "./lambda",
-      ]);
+      const expectedDependencies = [...dependencies, "react", "./lambda"];
 
       define(moduleName, dependencies, function (_test, require) {
         // @ts-ignore: because the module does not exist
@@ -108,7 +108,9 @@ describe("define()", () => {
 
       const definedModule = definedModules.get(moduleName);
       expect(definedModule).toBeDefined();
-      expect(definedModule?.deps).toEqual(expectedDependencies);
+      expect([...definedModule!.dependencies.values()]).toEqual(
+        expectedDependencies
+      );
     });
   });
 });

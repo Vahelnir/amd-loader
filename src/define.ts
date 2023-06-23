@@ -39,16 +39,15 @@ export function define(
   }
 
   const allDependencies = new Set([
-    ...dependencies,
+    ...(dependencies.length > 0
+      ? dependencies
+      : ["require", "exports", "module"]),
     ...parseDependencies(factory.toString()),
   ]);
 
   definedModules.set(id, {
     factory,
-    deps:
-      allDependencies.size > 0
-        ? allDependencies
-        : new Set(["require", "exports", "module"]),
+    dependencies: allDependencies,
     module: {
       id,
       filename: id,
