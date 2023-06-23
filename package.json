@@ -1,0 +1,24 @@
+{
+  "name": "amd-loader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "build": "run-p build:*",
+    "build:minify": "MINIFY=true rollup -c",
+    "build:normal": "rollup -c",
+    "watch": "rollup -c -w"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.8.8",
+    "rollup": "^3.25.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-terser": "^0.4.3"
+  }
+}
