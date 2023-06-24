@@ -8,7 +8,7 @@ export default defineConfig({
   build: {
     minify: MINIFY,
     lib: {
-      entry: resolve(__dirname, "src/main.js"),
+      entry: resolve(__dirname, "src/main.ts"),
       name: "amd_loader",
       fileName: () => (MINIFY ? "amd-loader.min.js" : "amd-loader.js"),
       formats: ["iife"],
