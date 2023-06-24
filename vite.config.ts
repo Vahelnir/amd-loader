@@ -15,7 +15,7 @@ export default defineConfig({
     },
     rollupOptions: {
       output: {
-        globals: { global: "global" },
+        globals: { global: "globalThis || this" },
       },
       external: ["global"],
     },
