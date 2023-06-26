@@ -3,6 +3,9 @@ import { makeRequire } from "./makeRequire";
 import { CommonJSModuleFactory, ModuleFactory, definedModules } from "./module";
 import { parseDependencies } from "./parseDependencies";
 
+const isFunction = (value: unknown): value is (...args: unknown[]) => unknown =>
+  typeof value === "function";
+
 /**
  * Define an AMD module
  */
@@ -19,35 +22,23 @@ export function define(
   rawDependencies?: unknown,
   rawFactory?: unknown
 ): void {
-  const getDependencies = () => {
-    if (Array.isArray(rawId)) return rawId;
-    if (Array.isArray(rawDependencies)) return rawDependencies;
-    return [];
-  };
-  const getFactory = () => {
-    if (typeof rawId === "function") return rawId;
-    if (typeof rawDependencies === "function") return rawDependencies;
-    return rawFactory;
-  };
-
-  // TODO: handle the case where the name should be what it as been required as
   const id = typeof rawId === "string" ? rawId : "";
-  const dependencies = getDependencies();
-  const factory = getFactory() as ModuleFactory;
-  if (!factory) {
-    throw new Error("no factory defined");
+  if (!id) {
+    // TODO: handle the case where the name should be what it as been required as
+    throw new Error(
+      "Defining an AMD module without a name is not yet supported"
+    );
   }
 
-  const allDependencies = new Set([
-    ...(dependencies.length > 0
-      ? dependencies
-      : ["require", "exports", "module"]),
+  const factory = getFactory(rawId, rawDependencies, rawFactory);
+  const dependencies = new Set([
+    ...getDependencies(rawId, rawDependencies),
     ...parseDependencies(factory.toString()),
   ]);
 
   definedModules.set(id, {
     factory,
-    dependencies: allDependencies,
+    dependencies,
     module: {
       id,
       filename: id,
@@ -62,3 +53,20 @@ export function define(
   });
 }
 define.amd = {};
+
+const getDependencies = (rawId: unknown, rawDependencies: unknown) => {
+  if (Array.isArray(rawId)) return rawId;
+  if (Array.isArray(rawDependencies)) return rawDependencies;
+  return ["require", "exports", "module"];
+};
+
+const getFactory = (
+  rawId: unknown,
+  rawDependencies: unknown,
+  rawFactory: unknown
+) => {
+  if (isFunction(rawId)) return rawId;
+  if (isFunction(rawDependencies)) return rawDependencies;
+  if (isFunction(rawFactory)) return rawFactory;
+  throw new Error("Providing a factory is mandatory when defining a module");
+};
