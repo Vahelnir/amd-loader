@@ -4,11 +4,7 @@ import { dirname } from "./dirname";
  * Create a module resolver
  */
 export const makeResolver = (currentModuleId: string) => (moduleId: string) => {
-  if (
-    moduleId.startsWith("~") ||
-    moduleId.startsWith("@") ||
-    !moduleId.startsWith(".")
-  ) {
+  if (!moduleId.startsWith(".")) {
     return moduleId;
   }
 
