@@ -1,3 +1,4 @@
 declare module "global" {
-  export default object;
+  const global: object;
+  export default global;
 }
