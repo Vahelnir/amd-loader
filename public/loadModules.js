@@ -7,5 +7,5 @@ const importScript = (moduleId) => {
 };
 
 window.addEventListener("DOMContentLoaded", () => {
-  importScript("test");
+  importScript("testModule");
 });

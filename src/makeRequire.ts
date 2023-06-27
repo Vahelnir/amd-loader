@@ -1,7 +1,7 @@
 import { makeResolver } from "./makeResolver";
 import { ModuleExports, getModule, getModuleAsync } from "./module";
 
-type ResolveFunc = (...deps: unknown[]) => void;
+type ResolveFunc = (...deps: ModuleExports[]) => void;
 type RejectFunc = (rej: unknown) => void;
 
 export type RequireFunc = ReturnType<typeof makeRequire>;

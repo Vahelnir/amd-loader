@@ -3,19 +3,19 @@ import { define } from "../src/define";
 import { amdLoader } from "../src/amdLoader";
 
 describe("defining-modules", () => {
-  it("should import a simple module", () => {
+  it("should import a simple module", async () => {
     const p = new Promise<void>((res) =>
       define("test", () => {
         res();
       })
     );
 
-    amdLoader.require("test");
+    await amdLoader.import("test");
 
     return p;
   });
 
-  it("should have require, exports & module if no explicit dependencies are defined", () => {
+  it("should have require, exports & module if no explicit dependencies are defined", async () => {
     const moduleName = "test";
 
     const moduleExecutionPromise = new Promise<void>((res) =>
@@ -28,12 +28,12 @@ describe("defining-modules", () => {
       })
     );
 
-    amdLoader.require(moduleName);
+    await amdLoader.import(moduleName);
 
     return moduleExecutionPromise;
   });
 
-  it("should require data exported with 'exports'", () => {
+  it("should require data exported with 'exports'", async () => {
     const moduleName = "test";
 
     define(moduleName, (_require, exports) => {
@@ -41,13 +41,13 @@ describe("defining-modules", () => {
       exports.have = "I been exported ?";
     });
 
-    const requiredModule = amdLoader.require(moduleName);
+    const requiredModule = await amdLoader.import(moduleName);
 
     expect(requiredModule.hello).toBe("world");
     expect(requiredModule.have).toBe("I been exported ?");
   });
 
-  it("should require data exported with 'module.exports'", () => {
+  it("should require data exported with 'module.exports'", async () => {
     const moduleName = "test";
 
     define(moduleName, (_require, _exports, module) => {
@@ -56,14 +56,14 @@ describe("defining-modules", () => {
       module.exports.have = "I been exported ?";
     });
 
-    const requiredModule = amdLoader.require(moduleName);
+    const requiredModule = await amdLoader.import(moduleName);
 
     expect(requiredModule.test).toBe("working properly!");
     expect(requiredModule.hello).toBe("world");
     expect(requiredModule.have).toBe("I been exported ?");
   });
 
-  it("should require data exported with the return", () => {
+  it("should require data exported with the return", async () => {
     const moduleName = "test";
 
     define(moduleName, () => {
@@ -74,14 +74,14 @@ describe("defining-modules", () => {
       };
     });
 
-    const requiredModule = amdLoader.require(moduleName);
+    const requiredModule = await amdLoader.import(moduleName);
 
     expect(requiredModule.test).toBe("world");
     expect(requiredModule.hello).toBe("working correctly!");
     expect(requiredModule.I).toBe("have been exported!");
   });
 
-  it("should import dependencies with require", () => {
+  it("should import dependencies with require", async () => {
     define("react", (_, exports) => {
       exports.h = () => "test";
     });
@@ -96,12 +96,12 @@ describe("defining-modules", () => {
       });
     });
 
-    amdLoader.require("main");
+    await amdLoader.import("main");
 
     return moduleExecutionPromise;
   });
 
-  it("should import dependencies with explicit dependencies", () => {
+  it("should import dependencies with explicit dependencies", async () => {
     define("react", (_, exports) => {
       exports.h = () => "test";
     });
@@ -114,7 +114,7 @@ describe("defining-modules", () => {
       });
     });
 
-    amdLoader.require("main");
+    await amdLoader.import("main");
 
     return moduleExecutionPromise;
   });

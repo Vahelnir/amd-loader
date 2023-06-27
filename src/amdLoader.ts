@@ -1,6 +1,7 @@
 import { makeRequire } from "./makeRequire";
 import { modulesCache } from "./modulesCache";
 import { define } from "./define";
+import { ModuleExports } from "./module";
 
 const require = makeRequire();
 
@@ -10,5 +11,7 @@ export const amdLoader = {
   makeRequire,
   require,
   import: (id: string) =>
-    new Promise((resolve, reject) => require([id], resolve, reject)),
+    new Promise<ModuleExports>((resolve, reject) =>
+      require([id], ([id]) => resolve(id), reject)
+    ),
 };

@@ -3,4 +3,4 @@ window.define(() => {
   console.log("hello world");
 });
 
-window.importModule("test");
+window.importModule("testModule");

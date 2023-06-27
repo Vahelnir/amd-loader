@@ -32,46 +32,47 @@ export const getModuleAsyncOr = async (
     id: string
   ) => Promise<CachedModule | undefined> | CachedModule | undefined
 ) => {
-  let definedModule = modulesCache.get(id);
-  if (!definedModule) {
-    definedModule = await or(currentId, id);
+  let cachedModule = modulesCache.get(id);
+  if (!cachedModule) {
+    cachedModule = await or(currentId, id);
   }
-  if (!definedModule) {
+  if (!cachedModule) {
     throw new Error(
       `module "${id}" does not exist, resolved module name: "${id}" (imported by "${currentId}")`
     );
   }
 
-  if (!definedModule.module.loaded) {
-    executeModule(definedModule);
+  if (!cachedModule.module.loaded) {
+    await executeModule(cachedModule);
   }
 
-  return definedModule.module;
+  return cachedModule.module;
 };
 
 export const getModuleAsync = (currentId: string, id: string) =>
   getModuleAsyncOr(currentId, id, () => undefined);
 
 export const getModule = (currentId: string, id: string) => {
-  const definedModule = modulesCache.get(id);
-  if (!definedModule) {
+  const cachedModule = modulesCache.get(id);
+  if (!cachedModule) {
     throw new Error(
       `module "${id}" does not exist, resolved module name: "${id}" (imported by "${currentId}")`
     );
   }
-
-  if (!definedModule.module.loaded) {
-    executeModule(definedModule);
+  if (!cachedModule.module.loaded) {
+    throw new Error(
+      "The module you are trying to load has not yet been loaded"
+    );
   }
 
-  return definedModule.module;
+  return cachedModule.module;
 };
 
 const fetchDependencyModule = async (
-  definedModule: CachedModule,
+  cachedModule: CachedModule,
   dependency: string
 ) => {
-  const { module } = definedModule;
+  const { module } = cachedModule;
 
   if (dependency === "require") {
     return module.require;
@@ -94,21 +95,21 @@ const fetchDependencyModule = async (
   return foundModule.exports;
 };
 
-const fetchDependencyModules = (definedModule: CachedModule) => {
+const fetchDependencyModules = (cachedModule: CachedModule) => {
   return Promise.all(
-    [...definedModule.dependencies.values()].map((dep) =>
-      fetchDependencyModule(definedModule, dep)
+    [...cachedModule.dependencies.values()].map((dep) =>
+      fetchDependencyModule(cachedModule, dep)
     )
   );
 };
 
-const executeModule = async (definedModule: CachedModule) => {
-  const resolvedDependencies = await fetchDependencyModules(definedModule);
+const executeModule = async (cachedModule: CachedModule) => {
+  const resolvedDependencies = await fetchDependencyModules(cachedModule);
 
-  definedModule.module.loaded = true;
+  cachedModule.module.loaded = true;
 
-  const result = definedModule.factory(...resolvedDependencies);
+  const result = cachedModule.factory(...resolvedDependencies);
   if (result) {
-    definedModule.module.exports = result;
+    cachedModule.module.exports = result;
   }
 };
