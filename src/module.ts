@@ -1,5 +1,6 @@
 import { CachedModule, modulesCache } from "./modulesCache";
 import { RequireFunc } from "./makeRequire";
+import { importAsScript } from "./loading/importAsScript";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ModuleExports = any;
@@ -24,17 +25,11 @@ export type Module = {
   require: RequireFunc;
 };
 
-export const getModuleAsyncOr = async (
-  currentId: string,
-  id: string,
-  or: (
-    currentId: string,
-    id: string
-  ) => Promise<CachedModule | undefined> | CachedModule | undefined
-) => {
+export const getModuleAsync = async (currentId: string, id: string) => {
   let cachedModule = modulesCache.get(id);
   if (!cachedModule) {
-    cachedModule = await or(currentId, id);
+    await importAsScript(id);
+    cachedModule = modulesCache.get(id);
   }
   if (!cachedModule) {
     throw new Error(
@@ -48,9 +43,6 @@ export const getModuleAsyncOr = async (
 
   return cachedModule.module;
 };
-
-export const getModuleAsync = (currentId: string, id: string) =>
-  getModuleAsyncOr(currentId, id, () => undefined);
 
 export const getModule = (currentId: string, id: string) => {
   const cachedModule = modulesCache.get(id);
@@ -86,10 +78,7 @@ const fetchDependencyModule = async (
     return module;
   }
 
-  const foundModule = await getModuleAsyncOr(module.id, dependency, () => {
-    // TODO: try to fetch the module from the server (fetch, script, whatever)
-    return undefined;
-  });
+  const foundModule = await getModuleAsync(module.id, dependency);
 
   module.children.push(foundModule);
   return foundModule.exports;
