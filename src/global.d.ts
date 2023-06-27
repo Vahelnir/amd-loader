@@ -1,4 +1,11 @@
 declare module "global" {
-  const global: object;
+  type AMDLoader = typeof import("./amdLoader").amdLoader;
+
+  const global: object & {
+    amdLoader?: AMDLoader;
+    define?: AMDLoader["define"];
+    require?: AMDLoader["require"];
+    import?: AMDLoader["import"];
+  };
   export default global;
 }
