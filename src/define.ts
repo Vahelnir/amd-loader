@@ -1,7 +1,7 @@
-import { dirname } from "./dirname";
+import { dirname } from "./resolve/dirname";
 import { makeRequire } from "./makeRequire";
-import type { CommonJSModuleFactory, ModuleFactory } from "./module";
-import { modulesCache } from "./modulesCache";
+import type { CommonJSModuleFactory, ModuleFactory } from "./module/types";
+import { cache } from "./module/cache";
 import { parseDependencies } from "./parseDependencies";
 
 const isFunction = (value: unknown): value is (...args: unknown[]) => unknown =>
@@ -38,7 +38,7 @@ export function define(
     ...parseDependencies(factory.toString()),
   ]);
 
-  modulesCache.set(id, {
+  cache.set(id, {
     factory,
     dependencies,
     module: {

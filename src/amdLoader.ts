@@ -1,12 +1,12 @@
 import { makeRequire } from "./makeRequire";
-import { modulesCache } from "./modulesCache";
+import { cache } from "./module/cache";
 import { define } from "./define";
-import { ModuleExports } from "./module";
+import { ModuleExports } from "./module/types";
 
 const require = makeRequire();
 
 export const amdLoader = {
-  modules: modulesCache,
+  modules: cache,
   define,
   makeRequire,
   require,

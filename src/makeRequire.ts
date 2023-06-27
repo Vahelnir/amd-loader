@@ -1,5 +1,6 @@
-import { makeResolver } from "./makeResolver";
-import { ModuleExports, getModule, getModuleAsync } from "./module";
+import { makeResolver } from "./resolve/makeResolver";
+import { ModuleExports } from "./module/types";
+import { getModule, getModuleAsync } from "./module/getModule";
 
 type ResolveFunc = (...deps: ModuleExports[]) => void;
 type RejectFunc = (rej: unknown) => void;

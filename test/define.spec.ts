@@ -1,6 +1,6 @@
 import { it, describe, expect, beforeEach } from "vitest";
 import { define } from "../src/define";
-import { modulesCache } from "../src/modulesCache";
+import { modulesCache } from "../src/module/cache";
 
 const noop = () => () => {
   // noop

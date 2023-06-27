@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { CommonJSModuleFactory } from "../src/module";
+import { CommonJSModuleFactory } from "../src/module/types";
 import { parseDependencies } from "../src/parseDependencies";
-import { modulesCache } from "../src/modulesCache";
+import { modulesCache } from "../src/module/cache";
 
 describe("parseDependencies()", () => {
   beforeEach(() => {

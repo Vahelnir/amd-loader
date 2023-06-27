@@ -1,13 +1,20 @@
 export const importAsScript = (moduleId: string) => {
   const scriptUrl = moduleId + ".js";
+  const script = createScriptElement(scriptUrl, moduleId);
+  return load(moduleId, scriptUrl, script);
+};
 
+const createScriptElement = (scriptUrl: string, moduleId: string) => {
   const script = document.createElement("script");
   script.async = true;
   script.src = scriptUrl;
   script.setAttribute("data-module-name", moduleId);
   document.body.append(script);
+  return script;
+};
 
-  return new Promise((resolve, reject) => {
+const load = (moduleId: string, scriptUrl: string, script: HTMLScriptElement) =>
+  new Promise((resolve, reject) => {
     const handleLoad = () => {
       resolve(moduleId);
       cleanup();
@@ -26,4 +33,3 @@ export const importAsScript = (moduleId: string) => {
     script.addEventListener("load", handleLoad);
     script.addEventListener("error", handleError);
   });
-};
