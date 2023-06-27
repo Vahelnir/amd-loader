@@ -1,9 +1,12 @@
 import { CachedModule, modulesCache } from "./modulesCache";
 import { RequireFunc } from "./makeRequire";
-import { makeResolver } from "./makeResolver";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type ModuleFactory<T extends any[] = any[]> = (...args: T) => unknown;
+export type ModuleExports = any;
+
+export type ModuleFactory<T extends ModuleExports[] = ModuleExports[]> = (
+  ...args: T
+) => unknown;
 
 export type CommonJSModuleFactory = ModuleFactory<
   [RequireFunc, Record<PropertyKey, unknown>, Module]
@@ -11,8 +14,7 @@ export type CommonJSModuleFactory = ModuleFactory<
 
 export type Module = {
   children: Module[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  exports: any;
+  exports: ModuleExports;
   filename: string;
   id: string;
   isPreloading: boolean;
@@ -22,14 +24,11 @@ export type Module = {
   require: RequireFunc;
 };
 
-export const requireModule = (currentId: string, id: string) => {
-  const resolve = makeResolver(currentId);
-  const resolvedId = resolve(id);
-
-  const definedModule = modulesCache.get(resolvedId);
+export const getModule = (currentId: string, id: string) => {
+  const definedModule = modulesCache.get(id);
   if (!definedModule) {
     throw new Error(
-      `module "${id}" does not exist, resolved module name: "${resolvedId}" (imported by "${currentId}")`
+      `module "${id}" does not exist, resolved module name: "${id}" (imported by "${currentId}")`
     );
   }
 
@@ -58,7 +57,7 @@ const fetchDependencyModule = (
     return module;
   }
 
-  const foundModule = requireModule(module.id, dependency);
+  const foundModule = getModule(module.id, dependency);
   module.children.push(foundModule);
   return foundModule.exports;
 };

@@ -1,36 +1,37 @@
-import { requireModule } from "./module";
+import { makeResolver } from "./makeResolver";
+import { ModuleExports, getModule } from "./module";
 
 type ResolveFunc = (...deps: unknown[]) => void;
 type RejectFunc = (rej: unknown) => void;
 
-export type RequireFunc = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (ids: string): any;
-  (ids: string[], resolve: ResolveFunc, reject: RejectFunc): undefined;
-  (
-    ids: string[] | string,
-    resolve?: ResolveFunc,
-    reject?: RejectFunc
-  ): // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  any | undefined;
-};
+export type RequireFunc = ReturnType<typeof makeRequire>;
 
 /**
  * Create a new require relative to the `currentId`
  */
 export const makeRequire = (currentId = "") => {
-  return ((
+  const moduleResolver = makeResolver(currentId);
+  const requireModule = (id: string) => {
+    const resolvedId = moduleResolver(id);
+    return getModule(currentId, resolvedId).exports;
+  };
+
+  function require(ids: string): ModuleExports;
+  function require(
+    ids: string[],
+    resolve: ResolveFunc,
+    reject: RejectFunc
+  ): undefined;
+  function require(
     ids: string | string[],
     resolve?: ResolveFunc,
     reject?: RejectFunc
-  ): unknown | undefined => {
+  ): ModuleExports | undefined {
     if (!Array.isArray(ids)) {
-      return requireModule(currentId, ids).exports;
+      return requireModule(ids);
     }
 
-    const importedModules = ids.map(
-      (id) => requireModule(currentId, id).exports
-    );
+    const importedModules = ids.map(requireModule);
     const error = undefined;
 
     if (resolve && reject) {
@@ -49,5 +50,7 @@ export const makeRequire = (currentId = "") => {
     throw new Error(
       "when 'paths' is an array, resolve and reject have to be defined"
     );
-  }) as RequireFunc;
+  }
+  require.toUrl = moduleResolver;
+  return require;
 };
