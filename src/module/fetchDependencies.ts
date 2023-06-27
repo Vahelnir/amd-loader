@@ -27,8 +27,6 @@ const fetchDependency = async (
 
 export const fetchDependencies = (cachedModule: CachedModule) => {
   return Promise.all(
-    [...cachedModule.dependencies.values()].map((dep) =>
-      fetchDependency(cachedModule, dep)
-    )
+    cachedModule.dependencies.map((dep) => fetchDependency(cachedModule, dep))
   );
 };

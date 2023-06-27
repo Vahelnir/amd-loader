@@ -1,3 +1,3 @@
-window.addEventListener("DOMContentLoaded", () => {
-  window.importModule("./testModule");
+window.addEventListener("DOMContentLoaded", async () => {
+  await window.importModule("./testModule");
 });

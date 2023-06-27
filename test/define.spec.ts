@@ -16,7 +16,7 @@ describe("define()", () => {
     expect(() => define()).toThrow();
   });
 
-  define("when no explicit dependencies", () => {
+  describe("when no explicit dependencies", () => {
     it("factory should have require, exports and module as dependencies", () => {
       const moduleName = "myModuleWithoutDependencies";
 
@@ -28,7 +28,7 @@ describe("define()", () => {
 
   // TODO: implement anonymous define & test it
 
-  define("with name and factory", () => {
+  describe("with name and factory", () => {
     it("should create a named module without dependencies", () => {
       const moduleName = "myModuleWithoutDependencies";
 
@@ -53,7 +53,7 @@ describe("define()", () => {
     it("should create a named module with dependencies", () => {
       const moduleName = "myModuleWithDependencies";
       const dependencies = ["./test", "require", "lodash"];
-      const expectedDependencies = [...dependencies];
+      const expectedDependencies = ["test", "require", "lodash"];
 
       define(moduleName, dependencies, noop());
 
@@ -94,9 +94,40 @@ describe("define()", () => {
     });
 
     it("should concat extracted dependencies with explicit dependencies", () => {
-      const moduleName = "myModuleWithDependencies";
-      const dependencies = ["./test", "require", "lodash"];
-      const expectedDependencies = [...dependencies, "react", "./lambda"];
+      const moduleName = "test/myModuleWithDependencies";
+      const dependencies = ["../test", "require", "lodash"];
+      const expectedDependencies = [
+        "test",
+        "require",
+        "lodash",
+        "react",
+        "test/lambda",
+      ];
+
+      define(moduleName, dependencies, function (_test, require) {
+        require("react");
+        require("./lambda");
+      });
+
+      const definedModule = cache.get(moduleName);
+      expect(definedModule).toBeDefined();
+      expect([...definedModule!.dependencies.values()]).toEqual(
+        expectedDependencies
+      );
+    });
+  });
+
+  describe("dependency resolving", () => {
+    it("should resolve the dependencies relatively to the current module", () => {
+      const moduleName = "test/myModuleWithDependencies";
+      const dependencies = ["../test", "require", "lodash"];
+      const expectedDependencies = [
+        "test",
+        "require",
+        "lodash",
+        "react",
+        "test/lambda",
+      ];
 
       define(moduleName, dependencies, function (_test, require) {
         require("react");

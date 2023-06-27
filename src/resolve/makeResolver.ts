@@ -1,5 +1,7 @@
 import { dirname } from "./dirname";
 
+export type ResolverFunc = ReturnType<typeof makeResolver>;
+
 /**
  * Create a module resolver
  */

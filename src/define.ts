@@ -5,6 +5,7 @@ import { cache } from "./module/cache";
 import { parseDependencies } from "./parseDependencies";
 import { isFunction } from "./util/isFunction";
 import { isStringArray } from "./util/isStringArray";
+import { makeResolver } from "./resolve/makeResolver";
 
 /**
  * Define an AMD module
@@ -37,14 +38,16 @@ export function define(
     ...parseDependencies(factory.toString()),
   ]);
 
+  const resolver = makeResolver(id);
   cache.set(id, {
     factory,
-    dependencies,
+    dependencies: [...dependencies.values()].map(resolver),
     module: {
       id,
       filename: id,
       path: dirname(id),
-      require: makeRequire(id),
+      resolver,
+      require: makeRequire(id, resolver),
       isPreloading: false,
       loaded: false,
       children: [],

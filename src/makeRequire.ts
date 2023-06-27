@@ -1,4 +1,4 @@
-import { makeResolver } from "./resolve/makeResolver";
+import { ResolverFunc, makeResolver } from "./resolve/makeResolver";
 import { ModuleExports } from "./module/types";
 import { get, getAsync } from "./module/get";
 
@@ -10,15 +10,15 @@ export type RequireFunc = ReturnType<typeof makeRequire>;
 /**
  * Create a new require relative to the `currentId`
  */
-export const makeRequire = (currentId = "") => {
-  const moduleResolver = makeResolver(currentId);
+export const makeRequire = (currentId = "", useResolver?: ResolverFunc) => {
+  const resolver = useResolver ?? makeResolver(currentId);
   const requireModule = (id: string) => {
-    const resolvedId = moduleResolver(id);
+    const resolvedId = resolver(id);
     return get(currentId, resolvedId).exports;
   };
 
   const asyncRequireModule = async (id: string) => {
-    const resolvedId = moduleResolver(id);
+    const resolvedId = resolver(id);
     const module = await getAsync(currentId, resolvedId);
     return module.exports;
   };
@@ -54,6 +54,6 @@ export const makeRequire = (currentId = "") => {
       "when 'paths' is an array, resolve and reject have to be defined"
     );
   }
-  require.toUrl = moduleResolver;
+  require.toUrl = resolver;
   return require;
 };

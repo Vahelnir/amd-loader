@@ -1,4 +1,5 @@
 import { RequireFunc } from "@/makeRequire";
+import { ResolverFunc } from "@/resolve/makeResolver";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ModuleExports = any;
@@ -21,4 +22,5 @@ export type Module = {
   path: string;
   paths: string[];
   require: RequireFunc;
+  resolver: ResolverFunc;
 };
