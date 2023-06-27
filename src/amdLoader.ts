@@ -2,13 +2,13 @@ import { makeRequire } from "./makeRequire";
 import { definedModules } from "./module";
 import { define } from "./define";
 
-const requireSync = makeRequire();
+const require = makeRequire();
 
 export const amdLoader = {
   modules: definedModules,
   define,
   makeRequire,
-  requireSync,
-  require: (id: string) =>
-    new Promise((resolve, reject) => requireSync([id], resolve, reject)),
+  require,
+  import: (id: string) =>
+    new Promise((resolve, reject) => require([id], resolve, reject)),
 };
