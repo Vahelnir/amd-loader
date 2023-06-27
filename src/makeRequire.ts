@@ -1,5 +1,5 @@
 import { makeResolver } from "./makeResolver";
-import { ModuleExports, getModule } from "./module";
+import { ModuleExports, getModule, getModuleAsync } from "./module";
 
 type ResolveFunc = (...deps: unknown[]) => void;
 type RejectFunc = (rej: unknown) => void;
@@ -14,6 +14,12 @@ export const makeRequire = (currentId = "") => {
   const requireModule = (id: string) => {
     const resolvedId = moduleResolver(id);
     return getModule(currentId, resolvedId).exports;
+  };
+
+  const asyncRequireModule = async (id: string) => {
+    const resolvedId = moduleResolver(id);
+    const module = await getModuleAsync(currentId, resolvedId);
+    return module.exports;
   };
 
   function require(ids: string): ModuleExports;
@@ -31,19 +37,15 @@ export const makeRequire = (currentId = "") => {
       return requireModule(ids);
     }
 
-    const importedModules = ids.map(requireModule);
-    const error = undefined;
+    const modulesPromise = Promise.all(ids.map(asyncRequireModule));
 
     if (resolve && reject) {
-      if (error) {
-        reject(error);
-      }
-      resolve(...importedModules);
+      modulesPromise.then(resolve).catch(reject);
       return;
     }
 
     if (resolve) {
-      resolve(...importedModules, error);
+      modulesPromise.then((modules) => resolve(...modules));
       return;
     }
 
