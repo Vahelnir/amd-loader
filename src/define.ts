@@ -1,6 +1,6 @@
 import { dirname } from "./dirname";
 import { makeRequire } from "./makeRequire";
-import { CommonJSModuleFactory, ModuleFactory } from "./module";
+import type { CommonJSModuleFactory, ModuleFactory } from "./module";
 import { modulesCache } from "./modulesCache";
 import { parseDependencies } from "./parseDependencies";
 
@@ -23,11 +23,12 @@ export function define(
   rawDependencies?: unknown,
   rawFactory?: unknown
 ): void {
-  const id = typeof rawId === "string" ? rawId : "";
+  // TODO: handle the case where the factory can be an object
+  const id = getModuleId(rawId);
   if (!id) {
-    // TODO: handle the case where the name should be what it as been required as
+    // TODO: in this case it should simply directly executed without trying to cache it
     throw new Error(
-      "Defining an AMD module without a name is not yet supported"
+      "Defining a top level anonymous AMD module is not yet supported"
     );
   }
 
@@ -54,6 +55,18 @@ export function define(
   });
 }
 define.amd = {};
+
+const getModuleId = (rawId: unknown) => {
+  if (typeof rawId === "string") return rawId;
+
+  const dataModuleName =
+    document.currentScript?.getAttribute("data-module-name");
+  if (dataModuleName) {
+    return dataModuleName;
+  }
+
+  return undefined;
+};
 
 const getDependencies = (rawId: unknown, rawDependencies: unknown) => {
   if (Array.isArray(rawId)) return rawId;

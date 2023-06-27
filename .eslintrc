@@ -19,6 +19,12 @@
       "rules": {
         "@typescript-eslint/no-non-null-assertion": "off"
       }
+    },
+    {
+      "files": "./public/**/*",
+      "env": {
+        "browser": true
+      }
     }
   ]
 }

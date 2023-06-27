@@ -1,3 +1,5 @@
-define("main", () => {
-  console.log(document.currentScript);
+window.define(() => {
+  // no-op
 });
+
+window.import("main");
