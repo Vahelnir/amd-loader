@@ -1,13 +1,10 @@
 {
-  "include": ["src/**/*"],
+  "extends": "./tsconfig.base.json",
+  "include": ["env.d.ts", "src/**/*"],
   "exclude": ["src/**/__tests__/*"],
   "compilerOptions": {
     "composite": true,
     "baseUrl": ".",
-    "strict": true,
-    "checkJs": true,
-    "target": "ES2020",
-    "outDir": "dist",
     "paths": {
       "@/*": ["./src/*"]
     }

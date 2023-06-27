@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "types": []
+  }
+}
