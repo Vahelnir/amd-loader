@@ -1,3 +1,4 @@
+import { CachedModule, modulesCache } from "./modulesCache";
 import { RequireFunc } from "./makeRequire";
 import { makeResolver } from "./makeResolver";
 
@@ -21,19 +22,11 @@ export type Module = {
   require: RequireFunc;
 };
 
-export type DefinedModule = {
-  factory: ModuleFactory;
-  dependencies: Set<string>;
-  module: Module;
-};
-
-export const definedModules = new Map<string, DefinedModule>();
-
 export const requireModule = (currentId: string, id: string) => {
   const resolve = makeResolver(currentId);
   const resolvedId = resolve(id);
 
-  const definedModule = definedModules.get(resolvedId);
+  const definedModule = modulesCache.get(resolvedId);
   if (!definedModule) {
     throw new Error(
       `module "${id}" does not exist, resolved module name: "${resolvedId}" (imported by "${currentId}")`
@@ -48,7 +41,7 @@ export const requireModule = (currentId: string, id: string) => {
 };
 
 const fetchDependencyModule = (
-  definedModule: DefinedModule,
+  definedModule: CachedModule,
   dependency: string
 ) => {
   const { module } = definedModule;
@@ -70,13 +63,13 @@ const fetchDependencyModule = (
   return foundModule.exports;
 };
 
-const fetchDependencyModules = (definedModule: DefinedModule) => {
+const fetchDependencyModules = (definedModule: CachedModule) => {
   return [...definedModule.dependencies.values()].map((dep) =>
     fetchDependencyModule(definedModule, dep)
   );
 };
 
-const executeModule = (definedModule: DefinedModule) => {
+const executeModule = (definedModule: CachedModule) => {
   const resolvedDependencies = fetchDependencyModules(definedModule);
 
   definedModule.module.loaded = true;
