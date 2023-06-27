@@ -4,5 +4,5 @@ declare const appContext: object & {
   amdLoader?: AMDLoader;
   define?: AMDLoader["define"];
   require?: AMDLoader["require"];
-  import?: AMDLoader["import"];
+  importModule?: AMDLoader["import"];
 };
