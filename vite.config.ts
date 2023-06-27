@@ -15,9 +15,8 @@ export default defineConfig({
     },
     rollupOptions: {
       output: {
-        globals: { global: "globalThis || this" },
+        globals: { context: "globalThis || this" },
       },
-      external: ["global"],
     },
   },
   plugins: [],

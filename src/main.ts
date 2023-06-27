@@ -1,7 +1,6 @@
-import global from "global";
 import { amdLoader } from "./amdLoader";
 
-global.amdLoader = amdLoader;
-global.define = amdLoader.define;
-global.require = amdLoader.require;
-global.import = amdLoader.import;
+appContext.amdLoader = amdLoader;
+appContext.define = amdLoader.define;
+appContext.require = amdLoader.require;
+appContext.import = amdLoader.import;
