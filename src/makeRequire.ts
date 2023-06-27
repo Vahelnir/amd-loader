@@ -28,8 +28,22 @@ export const makeRequire = (currentId = "") => {
       return requireModule(currentId, ids).exports;
     }
 
+    const importedModules = ids.map(
+      (id) => requireModule(currentId, id).exports
+    );
+    const error = undefined;
+
     if (resolve && reject) {
-      resolve(...ids.map((id) => requireModule(currentId, id).exports));
+      if (error) {
+        reject(error);
+      }
+      resolve(...importedModules);
+      return;
+    }
+
+    if (resolve) {
+      resolve(...importedModules, error);
+      return;
     }
 
     throw new Error(
