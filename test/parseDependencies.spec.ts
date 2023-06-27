@@ -1,10 +1,11 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { CommonJSModuleFactory, definedModules } from "../src/module";
+import { CommonJSModuleFactory } from "../src/module";
 import { parseDependencies } from "../src/parseDependencies";
+import { modulesCache } from "../src/modulesCache";
 
 describe("parseDependencies()", () => {
   beforeEach(() => {
-    definedModules.clear();
+    modulesCache.clear();
   });
 
   it("should create a named module with dependencies declared in the factory", () => {

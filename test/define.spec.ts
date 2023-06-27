@@ -1,6 +1,6 @@
 import { it, describe, expect, beforeEach } from "vitest";
 import { define } from "../src/define";
-import { definedModules } from "../src/module";
+import { modulesCache } from "../src/modulesCache";
 
 const noop = () => () => {
   // noop
@@ -8,7 +8,7 @@ const noop = () => () => {
 
 describe("define()", () => {
   beforeEach(() => {
-    definedModules.clear();
+    modulesCache.clear();
   });
 
   it("throw an error if called without any argument", () => {
@@ -22,7 +22,7 @@ describe("define()", () => {
 
       define(moduleName, noop());
 
-      expect(definedModules.get(moduleName)).toBeDefined();
+      expect(modulesCache.get(moduleName)).toBeDefined();
     });
   });
 
@@ -34,7 +34,7 @@ describe("define()", () => {
 
       define(moduleName, noop());
 
-      expect(definedModules.get(moduleName)).toBeDefined();
+      expect(modulesCache.get(moduleName)).toBeDefined();
     });
 
     it("should add a DefinedModule into the module list", () => {
@@ -43,7 +43,7 @@ describe("define()", () => {
 
       define(moduleName, factory);
 
-      const definedModule = definedModules.get(moduleName);
+      const definedModule = modulesCache.get(moduleName);
       expect(definedModule).toBeDefined();
       expect(definedModule?.factory).toBe(factory);
     });
@@ -57,7 +57,7 @@ describe("define()", () => {
 
       define(moduleName, dependencies, noop());
 
-      const definedModule = definedModules.get(moduleName);
+      const definedModule = modulesCache.get(moduleName);
       expect(definedModule).toBeDefined();
       expect([...definedModule!.dependencies.values()]).toEqual(
         expectedDependencies
@@ -71,7 +71,7 @@ describe("define()", () => {
 
       define(moduleName, dependencies, factory);
 
-      const definedModule = definedModules.get(moduleName);
+      const definedModule = modulesCache.get(moduleName);
       expect(definedModule).toBeDefined();
       expect(definedModule?.factory).toBe(factory);
     });
@@ -87,7 +87,7 @@ describe("define()", () => {
         require("imatest");
       });
 
-      const definedModule = definedModules.get(moduleName);
+      const definedModule = modulesCache.get(moduleName);
       expect(definedModule).toBeDefined();
       expect([...definedModule!.dependencies.values()]).toEqual(
         expectedDependencies
@@ -106,7 +106,7 @@ describe("define()", () => {
         require("./lambda");
       });
 
-      const definedModule = definedModules.get(moduleName);
+      const definedModule = modulesCache.get(moduleName);
       expect(definedModule).toBeDefined();
       expect([...definedModule!.dependencies.values()]).toEqual(
         expectedDependencies

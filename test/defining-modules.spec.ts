@@ -10,7 +10,7 @@ describe("defining-modules", () => {
       })
     );
 
-    amdLoader.requireSync("test");
+    amdLoader.require("test");
 
     return p;
   });
@@ -28,7 +28,7 @@ describe("defining-modules", () => {
       })
     );
 
-    amdLoader.requireSync(moduleName);
+    amdLoader.require(moduleName);
 
     return moduleExecutionPromise;
   });
@@ -41,7 +41,7 @@ describe("defining-modules", () => {
       exports.have = "I been exported ?";
     });
 
-    const requiredModule = amdLoader.requireSync(moduleName);
+    const requiredModule = amdLoader.require(moduleName);
 
     expect(requiredModule.hello).toBe("world");
     expect(requiredModule.have).toBe("I been exported ?");
@@ -56,7 +56,7 @@ describe("defining-modules", () => {
       module.exports.have = "I been exported ?";
     });
 
-    const requiredModule = amdLoader.requireSync(moduleName);
+    const requiredModule = amdLoader.require(moduleName);
 
     expect(requiredModule.test).toBe("working properly!");
     expect(requiredModule.hello).toBe("world");
@@ -74,7 +74,7 @@ describe("defining-modules", () => {
       };
     });
 
-    const requiredModule = amdLoader.requireSync(moduleName);
+    const requiredModule = amdLoader.require(moduleName);
 
     expect(requiredModule.test).toBe("world");
     expect(requiredModule.hello).toBe("working correctly!");
@@ -96,7 +96,7 @@ describe("defining-modules", () => {
       });
     });
 
-    amdLoader.requireSync("main");
+    amdLoader.require("main");
 
     return moduleExecutionPromise;
   });
@@ -114,7 +114,7 @@ describe("defining-modules", () => {
       });
     });
 
-    amdLoader.requireSync("main");
+    amdLoader.require("main");
 
     return moduleExecutionPromise;
   });
