@@ -1,5 +1,5 @@
 import { CachedModule } from "./cache";
-import { getModuleAsync } from "./getModule";
+import { getAsync } from "./get";
 
 const fetchDependency = async (
   cachedModule: CachedModule,
@@ -19,7 +19,7 @@ const fetchDependency = async (
     return module;
   }
 
-  const foundModule = await getModuleAsync(module.id, dependency);
+  const foundModule = await getAsync(module.id, dependency);
 
   module.children.push(foundModule);
   return foundModule.exports;

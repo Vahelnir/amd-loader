@@ -1,6 +1,6 @@
 import { makeResolver } from "./resolve/makeResolver";
 import { ModuleExports } from "./module/types";
-import { getModule, getModuleAsync } from "./module/getModule";
+import { get, getAsync } from "./module/get";
 
 type ResolveFunc = (...deps: ModuleExports[]) => void;
 type RejectFunc = (rej: unknown) => void;
@@ -14,12 +14,12 @@ export const makeRequire = (currentId = "") => {
   const moduleResolver = makeResolver(currentId);
   const requireModule = (id: string) => {
     const resolvedId = moduleResolver(id);
-    return getModule(currentId, resolvedId).exports;
+    return get(currentId, resolvedId).exports;
   };
 
   const asyncRequireModule = async (id: string) => {
     const resolvedId = moduleResolver(id);
-    const module = await getModuleAsync(currentId, resolvedId);
+    const module = await getAsync(currentId, resolvedId);
     return module.exports;
   };
 

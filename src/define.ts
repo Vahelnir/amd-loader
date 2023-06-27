@@ -3,9 +3,8 @@ import { makeRequire } from "./makeRequire";
 import type { CommonJSModuleFactory, ModuleFactory } from "./module/types";
 import { cache } from "./module/cache";
 import { parseDependencies } from "./parseDependencies";
-
-const isFunction = (value: unknown): value is (...args: unknown[]) => unknown =>
-  typeof value === "function";
+import { isFunction } from "./util/isFunction";
+import { isStringArray } from "./util/isStringArray";
 
 /**
  * Define an AMD module
@@ -69,8 +68,8 @@ const getModuleId = (rawId: unknown) => {
 };
 
 const getDependencies = (rawId: unknown, rawDependencies: unknown) => {
-  if (Array.isArray(rawId)) return rawId;
-  if (Array.isArray(rawDependencies)) return rawDependencies;
+  if (isStringArray(rawId)) return rawId;
+  if (isStringArray(rawDependencies)) return rawDependencies;
   return ["require", "exports", "module"];
 };
 

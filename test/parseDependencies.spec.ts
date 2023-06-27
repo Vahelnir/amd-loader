@@ -1,17 +1,16 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { CommonJSModuleFactory } from "../src/module/types";
 import { parseDependencies } from "../src/parseDependencies";
-import { modulesCache } from "../src/module/cache";
+import { cache } from "../src/module/cache";
 
 describe("parseDependencies()", () => {
   beforeEach(() => {
-    modulesCache.clear();
+    cache.clear();
   });
 
   it("should create a named module with dependencies declared in the factory", () => {
     const expectedDependencies = ["imatest"];
     const method: CommonJSModuleFactory = (require) => {
-      // @ts-ignore: because the module does not exist
       require("imatest");
     };
 
@@ -24,7 +23,6 @@ describe("parseDependencies()", () => {
     const expectedDependencies = ["helloworld"];
     const method: CommonJSModuleFactory = (require) => {
       // require("hello")
-      // @ts-ignore: because the module does not exist
       require("helloworld");
     };
 
@@ -42,7 +40,6 @@ describe("parseDependencies()", () => {
     ];
     const method: CommonJSModuleFactory = (require) => {
       // require("hello")
-      // @ts-ignore: because the module does not exist
       require("helloworld");
       require("helloworld");
       require("helloworld");

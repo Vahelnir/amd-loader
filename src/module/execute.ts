@@ -1,7 +1,7 @@
 import { CachedModule } from "./cache";
 import { fetchDependencies } from "./fetchDependencies";
 
-export const executeModule = async (cachedModule: CachedModule) => {
+export const execute = async (cachedModule: CachedModule) => {
   const resolvedDependencies = await fetchDependencies(cachedModule);
 
   cachedModule.module.loaded = true;

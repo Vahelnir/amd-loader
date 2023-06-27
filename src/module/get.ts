@@ -1,8 +1,8 @@
 import { cache } from "./cache";
 import { importAsScript } from "../loading/importAsScript";
-import { executeModule } from "./execute";
+import { execute } from "./execute";
 
-export const getModuleAsync = async (currentId: string, id: string) => {
+export const getAsync = async (currentId: string, id: string) => {
   let cachedModule = cache.get(id);
   if (!cachedModule) {
     await importAsScript(id);
@@ -15,13 +15,13 @@ export const getModuleAsync = async (currentId: string, id: string) => {
   }
 
   if (!cachedModule.module.loaded) {
-    await executeModule(cachedModule);
+    await execute(cachedModule);
   }
 
   return cachedModule.module;
 };
 
-export const getModule = (currentId: string, id: string) => {
+export const get = (currentId: string, id: string) => {
   const cachedModule = cache.get(id);
   if (!cachedModule) {
     throw new Error(
