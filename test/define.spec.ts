@@ -141,4 +141,30 @@ describe("define()", () => {
       );
     });
   });
+
+  describe("prefixed dependencies", () => {
+    it("should resolve the proper prefixed dependency without changing it", () => {
+      const prefixedModuleName = "~myPrefix/hello";
+      const moduleName = "test/myModuleWithPrefixedDependencies";
+      const dependencies = ["require"];
+      const expectedDependencies = ["require", prefixedModuleName];
+
+      define(prefixedModuleName, [], () => {
+        // do nothing
+      });
+
+      define(moduleName, dependencies, (require) => {
+        require("~myPrefix/hello");
+      });
+
+      const definedPrefixedModule = cache.get(prefixedModuleName);
+      const definedModule = cache.get(moduleName);
+      expect(definedPrefixedModule).toBeDefined();
+      expect(definedModule).toBeDefined();
+
+      expect([...definedModule!.dependencies.values()]).toEqual(
+        expectedDependencies
+      );
+    });
+  });
 });

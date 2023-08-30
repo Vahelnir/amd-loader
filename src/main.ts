@@ -1,3 +1,4 @@
+import appContext from "appContext";
 import { amdLoader } from "./amdLoader";
 
 appContext.amdLoader = amdLoader;

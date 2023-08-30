@@ -14,8 +14,9 @@ export default defineConfig({
       formats: ["iife"],
     },
     rollupOptions: {
+      external: ["appContext"],
       output: {
-        globals: { context: "globalThis || this" },
+        globals: { appContext: "this || globalThis" },
       },
     },
   },
